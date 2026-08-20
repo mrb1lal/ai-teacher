@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Star, Quote, User, Globe, Award, TrendingUp } from 'lucide-react';
+import { useI18n } from './I18nProvider';
+import { ChevronLeft, ChevronRight, Star, Quote, Globe } from 'lucide-react';
 import { ScrollReveal } from './ScrollAnimations';
 
 const testimonials = [
@@ -69,10 +70,10 @@ const testimonials = [
 ];
 
 const stats = [
-  { label: 'Active Learners', value: '10,000+', icon: Globe, color: 'from-sky-500 to-blue-500' },
-  { label: 'Lessons Generated', value: '50,000+', icon: Award, color: 'from-purple-500 to-pink-500' },
-  { label: 'Images Analyzed', value: '25,000+', icon: TrendingUp, color: 'from-emerald-500 to-teal-500' },
-  { label: 'Countries', value: '50+', icon: Globe, color: 'from-amber-500 to-orange-500' },
+  { label: 'Active Learners', value: '10,000+', color: 'from-sky-500 to-blue-500' },
+  { label: 'Lessons Generated', value: '50,000+', color: 'from-purple-500 to-pink-500' },
+  { label: 'Images Analyzed', value: '25,000+', color: 'from-emerald-500 to-teal-500' },
+  { label: 'Countries', value: '50+', color: 'from-amber-500 to-orange-500' },
 ];
 
 const svgPattern = "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230ea5e9' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4h-4zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
@@ -95,13 +96,6 @@ export default function Testimonials() {
     if (Math.abs(diff) > 50) diff > 0 ? handleNext() : handlePrev();
   };
 
-  const statColors = {
-    'from-sky-500 to-blue-500': 'from-sky-500 to-blue-500',
-    'from-purple-500 to-pink-500': 'from-purple-500 to-pink-500',
-    'from-emerald-500 to-teal-500': 'from-emerald-500 to-teal-500',
-    'from-amber-500 to-orange-500': 'from-amber-500 to-orange-500',
-  };
-
   return (
     <section className="relative py-24 overflow-hidden bg-white dark:bg-slate-900">
       <div className="absolute inset-0 opacity-5" style={{ backgroundImage: `url("${svgPattern}")` }} />
@@ -118,7 +112,7 @@ export default function Testimonials() {
                   style={{ background: `linear-gradient(to right, ${stat.color.split(' to ')[0].replace('from-', '')}, ${stat.color.split(' to ')[1].replace('to-', '')})` }}
                 >
                   <div className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center text-white shadow-lg" style={{ background: `linear-gradient(to right, ${stat.color.split(' to ')[0].replace('from-', '')}, ${stat.color.split(' to ')[1].replace('to-', '')})` }}>
-                    <stat.icon className="w-7 h-7" />
+                    <Globe className="w-7 h-7" />
                   </motion.div>
                   <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-2">
                     {stat.value}
