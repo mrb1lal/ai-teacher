@@ -126,17 +126,23 @@ export default function Testimonials() {
                 transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
                 className="text-center"
               >
-                <motion.div
+                <div
                   whileHover={{ y: -4, scale: 1.02 }}
                   className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-opacity-10"
                   style={{ background: `linear-gradient(to right, ${stat.color.split(' to ')[0].replace('from-', '')}, ${stat.color.split(' to ')[1].replace('to-', '')})` }}
                 >
                   <div className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center text-white shadow-lg" style={{ background: `linear-gradient(to right, ${stat.color.split(' to ')[0].replace('from-', '')}, ${stat.color.split(' to ')[1].replace('to-', '')})` }}>
                     <Globe className="w-7 h-7" />
-                  </motion.div>
+                  </div>
                   <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-2">
                     {stat.value}
                   </div>
+                  <div className="text-slate-600 dark:text-slate-400 font-medium">
+                    {stat.label}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
                   <div className="text-slate-600 dark:text-slate-400 font-medium">
                     {stat.label}
                   </div>
