@@ -48,12 +48,9 @@ export default function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 lg:h-18">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-bold text-xl lg:text-2xl text-sky-500"
-            whileHover={{ scale: 1.05 }}
-          >
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl lg:text-2xl text-sky-500">
             <motion.span
+              whileHover={{ scale: 1.05 }}
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity, delay: 3 }}
               className="text-2xl lg:text-3xl"
