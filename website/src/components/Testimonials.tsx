@@ -104,7 +104,7 @@ export default function Testimonials() {
 
   return (
     <section className="relative py-24 overflow-hidden bg-white dark:bg-slate-900">
-      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: url("") }} />
+      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: `url("${svgPattern}")` }} />
       
       <div className="container mx-auto px-4 relative">
         {/* Stats */}
