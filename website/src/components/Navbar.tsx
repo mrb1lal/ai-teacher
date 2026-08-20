@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useI18n } from './I18nProvider';
-import { Menu, X as CloseIcon, Bot, Link, X as TwitterIcon, Code, Github, ChevronDown } from 'lucide-react';
+import { Menu, X as CloseIcon, Bot, Link as LinkIcon, X as TwitterIcon, Code, Github, ChevronDown } from 'lucide-react';
 
 const socialLinks = [
   { href: 'https://t.me/myaitecherbot', icon: Bot, label: 'Bot', ariaLabel: 'Telegram Bot' },
-  { href: 'https://www.linkedin.com/in/bilal-ahmadjanov-391784414', icon: Link, label: 'LinkedIn', ariaLabel: 'LinkedIn' },
+  { href: 'https://www.linkedin.com/in/bilal-ahmadjanov-391784414', icon: LinkIcon, label: 'LinkedIn', ariaLabel: 'LinkedIn' },
   { href: 'https://x.com/Feluvan1', icon: TwitterIcon, label: 'X', ariaLabel: 'X (Twitter)' },
   { href: 'https://www.codewars.com/users/mrb1lal', icon: Code, label: 'Codewars', ariaLabel: 'Codewars' },
 ];
