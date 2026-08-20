@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useI18n } from './I18nProvider';
 import { ChevronLeft, ChevronRight, Star, Quote, Globe } from 'lucide-react';
-import { ScrollReveal, StaggerContainer, StaggerItem } from './ScrollAnimations';
+import { ScrollReveal } from './ScrollAnimations';
 
 const testimonials = [
   {
@@ -125,9 +125,9 @@ export default function Testimonials() {
                 viewport={{ once: true, margin: '-100px' }}
                 transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
                 className="text-center"
+                whileHover={{ y: -4, scale: 1.02 }}
               >
                 <div
-                  whileHover={{ y: -4, scale: 1.02 }}
                   className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-opacity-10"
                   style={{ background: `linear-gradient(to right, ${stat.color.split(' to ')[0].replace('from-', '')}, ${stat.color.split(' to ')[1].replace('to-', '')})` }}
                 >
@@ -142,11 +142,6 @@ export default function Testimonials() {
                   </div>
                 </div>
               </motion.div>
-            ))}
-                  <div className="text-slate-600 dark:text-slate-400 font-medium">
-                    {stat.label}
-                  </div>
-                </motion.div>
             ))}
           </div>
         </div>
