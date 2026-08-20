@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useI18n } from './I18nProvider';
-import { Menu, X as CloseIcon, Bot, Link as LinkIcon, X as TwitterIcon, Code, Github, ChevronDown } from 'lucide-react';
+import { Menu, X as CloseIcon, Bot, Link as LinkIcon, X as TwitterIcon, Code, ChevronDown } from 'lucide-react';
 
 const socialLinks = [
   { href: 'https://t.me/myaitecherbot', icon: Bot, label: 'Bot', ariaLabel: 'Telegram Bot' },
