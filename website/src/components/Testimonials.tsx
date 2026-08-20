@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useI18n } from './I18nProvider';
 import { ChevronLeft, ChevronRight, Star, Quote, Globe } from 'lucide-react';
-import { ScrollReveal } from './ScrollAnimations';
+import { ScrollReveal, StaggerContainer, StaggerItem } from './ScrollAnimations';
 
 const testimonials = [
   {
@@ -82,7 +82,7 @@ const stats = [
   { label: 'Countries', value: '50+', color: 'from-amber-500 to-orange-500' },
 ];
 
-const svgPattern = "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230ea5e9' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4h-4zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
+const svgPattern = "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230ea5e9' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
 
 export default function Testimonials() {
   const { t } = useI18n();
@@ -102,22 +102,36 @@ export default function Testimonials() {
     if (Math.abs(diff) > 50) diff > 0 ? handleNext() : handlePrev();
   };
 
+  const statColors = {
+    'from-sky-500 to-blue-500': { from: 'sky-500', to: 'blue-500' },
+    'from-purple-500 to-pink-500': { from: 'purple-500', to: 'pink-500' },
+    'from-emerald-500 to-teal-500': { from: 'emerald-500', to: 'teal-500' },
+    'from-amber-500 to-orange-500': { from: 'amber-500', to: 'orange-500' },
+  };
+
   return (
     <section className="relative py-24 overflow-hidden bg-white dark:bg-slate-900">
       <div className="absolute inset-0 opacity-5" style={{ backgroundImage: `url("${svgPattern}")` }} />
       
       <div className="container mx-auto px-4 relative">
         {/* Stats */}
-        <ScrollReveal direction="up" delay={0.1} className="mb-16">
+        <div className="mb-16">
           <div className="grid grid-2 md:grid-4 gap-6 max-w-4xl mx-auto">
             {stats.map((stat, index) => (
-              <ScrollReveal key={stat.label} direction="up" delay={0.2 + index * 0.1} className="text-center">
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-100px' }}
+                transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+                className="text-center"
+              >
                 <motion.div
                   whileHover={{ y: -4, scale: 1.02 }}
                   className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-opacity-10"
-                  style={{ background: linear-gradient(to right, , ) }}
+                  style={{ background: `linear-gradient(to right, ${stat.color.split(' to ')[0].replace('from-', '')}, ${stat.color.split(' to ')[1].replace('to-', '')})` }}
                 >
-                  <div className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center text-white shadow-lg" style={{ background: linear-gradient(to right, , ) }}>
+                  <div className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center text-white shadow-lg" style={{ background: `linear-gradient(to right, ${stat.color.split(' to ')[0].replace('from-', '')}, ${stat.color.split(' to ')[1].replace('to-', '')})` }}>
                     <Globe className="w-7 h-7" />
                   </motion.div>
                   <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-2">
@@ -127,10 +141,9 @@ export default function Testimonials() {
                     {stat.label}
                   </div>
                 </motion.div>
-              </ScrollReveal>
             ))}
           </div>
-        </ScrollReveal>
+        </div>
 
         {/* Testimonials Header */}
         <ScrollReveal direction="up" delay={0.2} className="text-center mb-12">
@@ -178,7 +191,7 @@ export default function Testimonials() {
             <motion.div
               className="flex gap-6 pb-8"
               style={{
-                transform: 	ranslateX(-%),
+                transform: `translateX(-${currentIndex * (100 / testimonialsPerView)}%)`,
                 transition: 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
               }}
             >
@@ -189,8 +202,8 @@ export default function Testimonials() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-100px' }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className={lex-shrink-0 w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)]}
-                  style={{ flexShrink: 0, width: calc(100% /  - ) }}
+                  className={`flex-shrink-0 w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)]`}
+                  style={{ flexShrink: 0, width: `calc(100% / ${testimonialsPerView} - ${testimonialsPerView > 1 ? '1.5rem' : '0'})` }}
                 >
                   <motion.div
                     whileHover={{ y: -8 }}
@@ -256,8 +269,10 @@ export default function Testimonials() {
                   onClick={() => setCurrentIndex(i)}
                   whileHover={{ scale: 1.3 }}
                   whileTap={{ scale: 0.8 }}
-                  className={w-2.5 h-2.5 rounded-full transition-all duration-300 }
-                  aria-label={Go to slide }
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                    i === currentIndex ? 'bg-sky-500 w-8' : 'bg-slate-300 dark:bg-slate-600 hover:bg-sky-400'
+                  }`}
+                  aria-label={`Go to slide ${i + 1}`}
                 />
               ))}
             </motion.div>
