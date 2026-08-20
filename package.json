@@ -1,0 +1,36 @@
+{
+  "name": "ai-teacher-bot",
+  "version": "1.0.0",
+  "description": "AI English Teacher Bot for Telegram with Gemini AI",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "db:init": "node src/database/init.js",
+    "test": "echo \"Tests not configured yet\" && exit 0"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "gemini",
+    "ai",
+    "english",
+    "teacher"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "form-data": "^4.0.1",
+    "fs-extra": "^11.2.0",
+    "path": "^0.12.7",
+    "sql.js": "^1.14.2",
+    "telegraf": "^4.16.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
