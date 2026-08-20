@@ -82,63 +82,56 @@ export default function Contact() {
               <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                 <StaggerContainer staggerDelay={0.1}>
                   <StaggerItem>
-                    <label htmlFor="name" className="form-label flex items-center gap-2">
-                      <Mail className="w-5 h-5 text-sky-500" />
-                      {t('contact.name')}
-                    </label>
-                    <motion.div whileFocusWithin={{ scale: 1.01 }}>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="form-input"
-                        required
-                        placeholder="Your name"
-                        aria-label="Your name"
-                      />
-                    </motion.div>
+<label htmlFor="name" className="form-label flex items-center gap-2">
+  <Mail className="w-5 h-5 text-sky-500" />
+  {t('contact.name')}
+</label>
+<input
+  type="text"
+  id="name"
+  name="name"
+  value={formData.name}
+  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+  className="form-input"
+  required
+  placeholder="Your name"
+  aria-label="Your name"
+/>
                   </StaggerItem>
 
-                  <StaggerItem>
-                    <label htmlFor="email" className="form-label flex items-center gap-2">
-                      <Mail className="w-5 h-5 text-sky-500" />
-                      {t('contact.email')}
-                    </label>
-                    <motion.div whileFocusWithin={{ scale: 1.01 }}>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="form-input"
-                        required
-                        placeholder="your@email.com"
-                        aria-label="Your email"
-                      />
-                    </motion.div>
-                  </StaggerItem>
+<label htmlFor="email" className="form-label flex items-center gap-2">
+  <Mail className="w-5 h-5 text-sky-500" />
+  {t('contact.email')}
+</label>
+<input
+  type="email"
+  id="email"
+  name="email"
+  value={formData.email}
+  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+  className="form-input"
+  required
+  placeholder="your@email.com"
+  aria-label="Your email"
+/>
+</StaggerItem>
 
-                  <StaggerItem>
-                    <label htmlFor="message" className="form-label flex items-center gap-2">
-                      <MessageSquare className="w-5 h-5 text-sky-500" />
-                      {t('contact.message')}
-                    </label>
-                    <motion.div whileFocusWithin={{ scale: 1.01 }}>
-                      <textarea
-                        id="message"
-                        name="message"
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        className="form-input min-h-[180px] resize-y"
-                        required
-                        placeholder="Your message..."
-                        aria-label="Your message"
-                      />
-                    </motion.div>
-                  </StaggerItem>
+<StaggerItem>
+  <label htmlFor="message" className="form-label flex items-center gap-2">
+    <MessageSquare className="w-5 h-5 text-sky-500" />
+    {t('contact.message')}
+  </label>
+  <textarea
+    id="message"
+    name="message"
+    value={formData.message}
+    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+    className="form-input min-h-[180px] resize-y"
+    required
+    placeholder="Your message..."
+    aria-label="Your message"
+  />
+</StaggerItem>
 
                   <StaggerItem>
                     <motion.button
