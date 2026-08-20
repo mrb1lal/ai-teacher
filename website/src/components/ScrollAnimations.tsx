@@ -143,14 +143,16 @@ export function FloatingElement({
   );
 }
 
+interface MagneticButtonProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
 export function MagneticButton({
   children,
   className = '',
   ...props
-}: {
-  children: React.ReactNode;
-  className?: string;
-} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+}: MagneticButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const ref = useRef<HTMLButtonElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
