@@ -2,6 +2,7 @@ import { UserService, ChatHistoryService, SessionService } from '../database/ser
 import { geminiService } from '../services/gemini.js';
 import { ttsService } from '../services/tts.js';
 import { userProfiler } from '../services/profiler.js';
+import { pdfService } from '../services/pdf.js';
 
 const MAX_HISTORY = parseInt(process.env.MAX_CHAT_HISTORY) || 100;
 
@@ -23,6 +24,7 @@ I'm your personal English tutor powered by Gemini AI. Here's what I can do:
 📚 **Explain any English topic** - Just ask me anything!
 🔊 **Pronunciation audio** - Send me words/phrases and I'll generate audio
 🖼️ **Analyze images** - Send up to 6 images at once (text, exercises, etc.)
+📄 **Generate PDFs** - Create study reports, lessons, vocabulary lists
 💾 **Full chat memory** - I remember our entire conversation
 📊 **Personalized learning** - I track your level, weak/strong topics, and study patterns
 
@@ -32,6 +34,9 @@ I'm your personal English tutor powered by Gemini AI. Here's what I can do:
 /history - View chat history stats
 /clear - Clear chat history
 /recommend - Get personalized study recommendations
+/pdfreport - Generate your study report PDF
+/pdflesson - Create a lesson PDF (or say "create pdf for: topic")
+/pdfvocab - Create vocabulary PDF (or say "create vocab pdf for: topic")
 /help - Show detailed help
 
 Just start chatting! Ask me about grammar, vocabulary, idioms, IELTS prep, or anything English-related.`;
@@ -58,6 +63,12 @@ export async function handleHelp(ctx) {
 - Ask: "Explain this grammar exercise" or "Translate this menu"
 - Multiple images: Send 5-6 photos at once, I'll analyze all
 
+**📄 PDF Generation:**
+- **/pdfreport** - Your personalized study report (profile, stats, weak/strong topics, history)
+- **Create lesson PDF**: "create pdf for: present perfect tense" or "generate lesson about: phrasal verbs"
+- **Create vocabulary PDF**: "create vocab pdf for: business english" or "generate vocabulary pdf from: our conversation"
+- PDFs include explanations, examples, exercises with answers, IPA transcriptions
+
 **📊 Your Profile (Auto-built):**
 - English level (CEFR) & estimated IELTS band
 - Weak topics you struggle with
@@ -76,7 +87,8 @@ export async function handleHelp(ctx) {
 2. Send context: "I'm B1 level, explain simply"
 3. Use images for textbook exercises
 4. Ask for audio for new vocabulary
-5. Chat regularly - I learn your patterns!`;
+5. Chat regularly - I learn your patterns!
+6. Generate PDFs for offline study!`;
 
   await ctx.reply(helpMessage, { parse_mode: 'Markdown' });
 }
@@ -219,6 +231,113 @@ ${recommendations.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n') |
 - "Quiz me on vocabulary"`;
 
   await ctx.reply(message, { parse_mode: 'Markdown' });
+}
+
+export async function handlePDFReport(ctx) {
+  const user = ctx.from;
+  const dbUser = UserService.getByTelegramId(user.id);
+  
+  if (!dbUser) {
+    await ctx.reply('Please /start first.');
+    return;
+  }
+
+  try {
+    await ctx.reply('📄 Generating your study report PDF...');
+    const filepath = await pdfService.generateStudyReport(dbUser.id);
+    await ctx.replyWithDocument({ source: filepath }, { 
+      caption: '📊 Your Personalized Study Report' 
+    });
+  } catch (error) {
+    console.error('PDF report error:', error);
+    await ctx.reply('Sorry, failed to generate PDF report.');
+  }
+}
+
+export async function handlePDFLesson(ctx) {
+  const user = ctx.from;
+  const text = ctx.message.text;
+  const dbUser = UserService.getByTelegramId(user.id);
+  
+  if (!dbUser) {
+    await ctx.reply('Please /start first.');
+    return;
+  }
+
+  const match = text.match(/(?:create|make|generate)\s+(?:a\s+)?(?:pdf|lesson)\s+(?:for|about|on)\s+(.+)/i);
+  if (!match) {
+    await ctx.reply('Usage: "create pdf for: present perfect tense" or "generate lesson about: phrasal verbs"');
+    return;
+  }
+
+  const topic = match[1].trim();
+  
+  try {
+    await ctx.reply(`📝 Creating PDF lesson for "${topic}"...`);
+    
+    const prompt = `Create a comprehensive English lesson about "${topic}".
+    Include:
+    1. Clear explanation with examples
+    2. Key rules/patterns
+    3. Common mistakes to avoid
+    4. 5 practice exercises with answers
+    5. Vocabulary list with definitions
+    
+    Format as structured lesson content.`;
+    
+    const { text: lessonContent } = await geminiService.generateText(prompt, '', { temperature: 0.5, maxTokens: 3000 });
+    
+    const filepath = await pdfService.generateLessonPDF(dbUser.id, topic, lessonContent);
+    await ctx.replyWithDocument({ source: filepath }, { 
+      caption: `📚 Lesson PDF: ${topic}` 
+    });
+  } catch (error) {
+    console.error('PDF lesson error:', error);
+    await ctx.reply('Sorry, failed to create lesson PDF.');
+  }
+}
+
+export async function handlePDFVocab(ctx) {
+  const user = ctx.from;
+  const text = ctx.message.text;
+  const dbUser = UserService.getByTelegramId(user.id);
+  
+  if (!dbUser) {
+    await ctx.reply('Please /start first.');
+    return;
+  }
+
+  const match = text.match(/(?:create|make|generate)\s+(?:a\s+)?(?:pdf|vocab|vocabulary)\s+(?:for|from|with)\s+(.+)/i);
+  if (!match) {
+    await ctx.reply('Usage: "create vocab pdf for: business english" or "generate vocabulary pdf from: our conversation"');
+    return;
+  }
+
+  const topic = match[1].trim();
+  
+  try {
+    await ctx.reply(`📚 Creating vocabulary PDF for "${topic}"...`);
+    
+    const prompt = `Extract 20-30 key vocabulary words for "${topic}" for English learners.
+    Return JSON array of objects with: word, definition, example, ipa (if possible), difficulty (beginner/intermediate/advanced).`;
+    
+    const { text: vocabText } = await geminiService.generateText(prompt, '', { temperature: 0.3, maxTokens: 3000 });
+    
+    let words = [];
+    try {
+      words = JSON.parse(vocabText);
+    } catch {
+      words = [{ word: topic, definition: vocabText, example: '', difficulty: 'intermediate' }];
+    }
+    
+    const filepath = await pdfService.generateVocabularyPDF(dbUser.id, words, `Vocabulary: ${topic}`);
+    await ctx.replyWithDocument({ source: filepath }, { 
+      caption: `📖 Vocabulary PDF: ${topic}` 
+    });
+  } catch (error) {
+    console.error('PDF vocab error:', error);
+    await ctx.reply('Sorry, failed to create vocabulary PDF.');
+  }
 }
 
 export async function handleTextMessage(ctx) {
@@ -387,6 +506,9 @@ export default {
   handleHistory,
   handleClear,
   handleRecommend,
+  handlePDFReport,
+  handlePDFLesson,
+  handlePDFVocab,
   handleTextMessage,
   handleAudioRequest,
   handleImages,

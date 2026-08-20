@@ -8,6 +8,9 @@ import {
   handleHistory, 
   handleClear, 
   handleRecommend,
+  handlePDFReport,
+  handlePDFLesson,
+  handlePDFVocab,
   handleTextMessage,
   handleAudioRequest,
   handleImages,
@@ -61,6 +64,9 @@ bot.command('profile', handleProfile);
 bot.command('history', handleHistory);
 bot.command('clear', handleClear);
 bot.command('recommend', handleRecommend);
+bot.command('pdfreport', handlePDFReport);
+bot.command('pdflesson', handlePDFLesson);
+bot.command('pdfvocab', handlePDFVocab);
 
 bot.on('text', async (ctx, next) => {
   const text = ctx.message.text;
@@ -71,6 +77,14 @@ bot.on('text', async (ctx, next) => {
   
   if (/^(pronounce|read|audio|speak|say|generate audio for)[\s:]/i.test(text)) {
     return handleAudioRequest(ctx);
+  }
+  
+  if (/^(create|make|generate)\s+(?:a\s+)?(?:pdf|lesson)\s+(?:for|about|on)\s+/i.test(text)) {
+    return handlePDFLesson(ctx);
+  }
+  
+  if (/^(create|make|generate)\s+(?:a\s+)?(?:pdf|vocab|vocabulary)\s+(?:for|from|with)\s+/i.test(text)) {
+    return handlePDFVocab(ctx);
   }
   
   return handleTextMessage(ctx);
