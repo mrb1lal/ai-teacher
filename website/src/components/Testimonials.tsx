@@ -11,8 +11,9 @@ const testimonials = [
     id: 1,
     name: 'Maria Gonzalez',
     role: 'ESL Student',
-    country: '🇲🇽 Mexico',
-    level: 'B2 → C1',
+    country: 'Mexico',
+    flag: '🇲🇽',
+    level: 'B2 to C1',
     text: 'This bot completely changed how I learn English. The AI explanations are so clear, and the pronunciation audio helps me sound more natural. I improved my IELTS score from 6.5 to 7.5 in just 3 months!',
     rating: 5,
     avatar: 'MG',
@@ -21,8 +22,9 @@ const testimonials = [
     id: 2,
     name: 'Ahmed Hassan',
     role: 'Software Engineer',
-    country: '🇪🇬 Egypt',
-    level: 'B1 → B2',
+    country: 'Egypt',
+    flag: '🇪🇬',
+    level: 'B1 to B2',
     text: 'The image analysis feature is incredible. I send photos of textbook exercises and get instant explanations. The PDF lessons help me study offline during my commute. Highly recommended!',
     rating: 5,
     avatar: 'AH',
@@ -31,8 +33,9 @@ const testimonials = [
     id: 3,
     name: 'Priya Sharma',
     role: 'University Student',
-    country: '🇮🇳 India',
-    level: 'A2 → B1',
+    country: 'India',
+    flag: '🇮🇳',
+    level: 'A2 to B1',
     text: 'Finally, an AI tutor that actually understands my level. It tracks my weak topics and gives personalized recommendations. The vocabulary PDFs are perfect for revision before exams.',
     rating: 5,
     avatar: 'PS',
@@ -41,8 +44,9 @@ const testimonials = [
     id: 4,
     name: 'Thomas Mueller',
     role: 'Business Analyst',
-    country: '🇩🇪 Germany',
-    level: 'C1 → C2',
+    country: 'Germany',
+    flag: '🇩🇪',
+    level: 'C1 to C2',
     text: 'Even at advanced level, this bot challenges me. The image analysis for business documents is a game-changer. The personalized study reports keep me motivated and on track.',
     rating: 5,
     avatar: 'TM',
@@ -51,8 +55,9 @@ const testimonials = [
     id: 5,
     name: 'Yuki Tanaka',
     role: 'Marketing Specialist',
-    country: '🇯🇵 Japan',
-    level: 'B1 → B2',
+    country: 'Japan',
+    flag: '🇯🇵',
+    level: 'B1 to B2',
     text: 'The multi-language support is perfect - I can switch between English and Japanese explanations. The pronunciation audio with IPA transcription helped me fix my accent issues.',
     rating: 5,
     avatar: 'YT',
@@ -61,7 +66,8 @@ const testimonials = [
     id: 6,
     name: 'Carlos Rodriguez',
     role: 'English Teacher',
-    country: '🇨🇴 Colombia',
+    country: 'Colombia',
+    flag: '🇨🇴',
     level: 'C2',
     text: 'As an English teacher, I recommend this to all my students. The AI explanations are pedagogically sound. The PDF reports help me track student progress efficiently.',
     rating: 5,
@@ -224,7 +230,7 @@ export default function Testimonials() {
                         <div>
                           <div className="font-semibold text-slate-900 dark:text-white">{testimonial.name}</div>
                           <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                            <span>{testimonial.country}</span>
+                            <span>{testimonial.flag} {testimonial.country}</span>
                             <span className="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full" />
                             <span className="px-2 py-0.5 bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-full text-xs font-medium">
                               {testimonial.level}
