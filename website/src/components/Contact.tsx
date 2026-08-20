@@ -108,7 +108,7 @@ export default function Contact() {
                 aria-label="Your message"
               />
 
-              <button type="submit" disabled={status === 'loading'} className="btn btn-primary w-full py-4 flex items-center justify-center gap-3 text-lg font-semibold shadow-lg shadow-sky-500/25" disabled={status === 'loading'}>
+              <button type="submit" disabled={status === 'loading'} className="btn btn-primary w-full py-4 flex items-center justify-center gap-3 text-lg font-semibold shadow-lg shadow-sky-500/25">
                 {status === 'loading' ? (
                   <>
                     <Loader className="w-5 h-5 animate-spin" />
