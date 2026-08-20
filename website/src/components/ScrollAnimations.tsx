@@ -148,11 +148,13 @@ interface MagneticButtonProps {
   className?: string;
 }
 
+type ButtonProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onDrag' | 'onDragStart' | 'onDragEnd' | 'onDragEnter' | 'onDragLeave' | 'onDragOver' | 'onDrop'>;
+
 export function MagneticButton({
   children,
   className = '',
   ...props
-}: MagneticButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+}: MagneticButtonProps & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onDrag' | 'onDragStart' | 'onDragEnd' | 'onDragEnter' | 'onDragLeave' | 'onDragOver' | 'onDrop'>) {
   const ref = useRef<HTMLButtonElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
