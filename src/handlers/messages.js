@@ -1,4 +1,4 @@
-import { UserService, ChatHistoryService, SessionService } from '../database/service.js';
+import { UserService, ChatHistoryService, SessionService, ProfileService } from '../database/service.js';
 import { geminiService } from '../services/gemini.js';
 import { ttsService } from '../services/tts.js';
 import { userProfiler } from '../services/profiler.js';
@@ -6,18 +6,34 @@ import { pdfService } from '../services/pdf.js';
 
 const MAX_HISTORY = parseInt(process.env.MAX_CHAT_HISTORY) || 100;
 
-export async function handleStart(ctx) {
-  const user = ctx.from;
-  const dbUser = UserService.createOrUpdate(user.id, {
-    username: user.username,
-    first_name: user.first_name,
-    last_name: user.last_name,
-    language_code: user.language_code
-  });
+function getWelcomeMessage(lang = 'en') {
+  if (lang === 'uz') {
+    return `👋 AI Ingliz tili Ustoziga xush kelibsiz!
 
-  SessionService.start(dbUser.id);
+Men Gemini AI tomonidan quvvatlangan shaxsiy ingliz tili ustozingizman. Mana nimalar qila olaman:
 
-  const welcomeMessage = `👋 Welcome to AI English Teacher!
+📚 **Har qanday ingliz tili mavzusini tushuntiraman** - Shunchaki so'rang!
+🔊 **Audio talaffuz** - So'z/iboralari yuboring, men audio yasab beraman
+🖼️ **Rasmlarni tahlil qilaman** - Bir vaqtda 6 tagacha rasm (darsliklar, mashqlar, mnemonikalar)
+📄 **PDF yarataman** - Hisobotlar, darslar, lug'at ro'yxatlari
+💾 **To'liq chat xotirasi** - Barcha suhbatimizni eslab qolaman
+📊 **Shaxsiy o'rganish** - Darajangiz, zaif/kuchatgan mavzularingiz, o'rganish vaqtingizni kuzataman
+
+**Buyruqlar:**
+/start - Ushbu xabarni ko'rsatish
+/profile - O'rganish profilingizni ko'rish
+/history - Chat tarixi statistikasi
+/clear - Chat tarixini tozalash
+/recommend - Shaxsiy maslahatlar olish
+/pdfreport - O'rganish hisoboti PDF
+/pdflesson - Dars PDF yaratish (yoki "create pdf for: mavzu")
+/pdfvocab - Lug'at PDF yaratish (yoki "create vocab pdf for: mavzu")
+/help - Batafsil yordam
+/lang - Tilni o'zgartirish
+
+Suhbatni boshlang! Grammatika, lug'at, idomalar, IELTS tayyorgarligi yoki ingliz tili bo'yicha har qanday savol bering.`;
+  }
+  return `👋 Welcome to AI English Teacher!
 
 I'm your personal English tutor powered by Gemini AI. Here's what I can do:
 
@@ -38,14 +54,78 @@ I'm your personal English tutor powered by Gemini AI. Here's what I can do:
 /pdflesson - Create a lesson PDF (or say "create pdf for: topic")
 /pdfvocab - Create vocabulary PDF (or say "create vocab pdf for: topic")
 /help - Show detailed help
+/lang - Change language
 
 Just start chatting! Ask me about grammar, vocabulary, idioms, IELTS prep, or anything English-related.`;
+}
+
+export async function handleStart(ctx) {
+  const user = ctx.from;
+  const dbUser = UserService.createOrUpdate(user.id, {
+    username: user.username,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    language_code: user.language_code
+  });
+
+  SessionService.start(dbUser.id);
+
+  const lang = user.language_code?.startsWith('uz') ? 'uz' : 'en';
+  const welcomeMessage = getWelcomeMessage(lang);
 
   await ctx.reply(welcomeMessage);
 }
 
-export async function handleHelp(ctx) {
-  const helpMessage = `📖 **AI English Teacher - Detailed Help**
+function getHelpMessage(lang = 'en') {
+  if (lang === 'uz') {
+    return `📖 **AI Ingliz tili Ustoz - Batafsil Yordam**
+
+**🗣️ Matnli suhbat:**
+- Har qanday ingliz tili savoli: grammatika, lug'at, idomalar, phrasal verbs va boshqalar
+- Tushuntirish so'rang: "Explain the difference between 'make' and 'do'"
+- Suhbat mashqi: "Let's practice a job interview"
+- IELTS/TOEFL tayyorgarligi: "Give me IELTS speaking topic with sample answer"
+
+**🔊 Audio generatsiya:**
+- Har qanday so'z/ibora yuboring va "pronounce this" yoki "read this" deb yozing
+- Men IPA, ton belgilari va audio bilan talaffuz qo'llanmasi yarataman
+- Masalan: "pronounce: entrepreneurship" yoki "read this: The quick brown fox..."
+
+**🖼️ Rasm tahlili (6 tagacha):**
+- Darslik sahifalari, mashqlar, belgilar, menyular rasmlarini yuboring
+- So'rang: "Explain this grammar exercise" yoki "Translate this menu"
+- Ko'p rasm: 5-6 ta rasm birga yuboring, hammasini tahlil qilaman
+
+**📄 PDF yaratish:**
+- **/pdfreport** - Shaxsiy o'rganish hisobotingiz (profil, statistika, zaif/kuchli mavzular, tarix)
+- **Dars PDF**: "create pdf for: present perfect tense" yoki "generate lesson about: phrasal verbs"
+- **Lug'at PDF**: "create vocab pdf for: business english" yoki "generate vocabulary pdf from: our conversation"
+- PDFlar tushuntirishlar, misollar, javobli mashqlar, IPA transcriptionsni o'z ichiga oladi
+
+**📊 Sizning Profilingiz (Avtomatik):**
+- Ingliz tili darajasi (CEFR) va taxminiy IELTS balli
+- Qiyin tuyulgandir mavzularingiz
+- Yaxshi bilgan mavzularingiz
+- Sevimli o'rganish soatlari
+- Shaxsiy maslahatlar
+
+**💾 Xotira & Tarix:**
+- To'liq suhbat tarixi saqlanadi
+- Kontekstga mos javoblar
+- /history - statistika ko'rish
+- /clear - tarixni tozalash (profil qoladi)
+
+**⚡ Eng yaxshi natija uchun maslahatlar:**
+1. Aniq so'rang: "Explain present perfect vs past simple with examples"
+2. Kontekst bering: "I'm B1 level, explain simply"
+3. Darslik mashqlarida rasmlar ishlating
+4. Yangi lug'at uchun audio so'rang
+5. Doimiy suhbatlashing - men sizning na'moyotlaringizni o'rganaman!
+6. Oflayn o'rganish uchun PDF yarating!
+
+**🌐 Til almashtirish:** /lang buyrug'i bilan`;
+  }
+  return `📖 **AI English Teacher - Detailed Help**
 
 **🗣️ Text Chat:**
 - Ask any English question: grammar, vocabulary, idioms, phrasal verbs, etc.
@@ -88,8 +168,15 @@ export async function handleHelp(ctx) {
 3. Use images for textbook exercises
 4. Ask for audio for new vocabulary
 5. Chat regularly - I learn your patterns!
-6. Generate PDFs for offline study!`;
+6. Generate PDFs for offline study!
 
+**🌐 Change language:** Use /lang command`;
+}
+
+export async function handleHelp(ctx) {
+  const user = ctx.from;
+  const lang = user.language_code?.startsWith('uz') ? 'uz' : 'en';
+  const helpMessage = getHelpMessage(lang);
   await ctx.reply(helpMessage, { parse_mode: 'Markdown' });
 }
 
@@ -183,6 +270,49 @@ export async function handleHistory(ctx) {
   message += `\n\nUse /clear to clear history (profile data preserved).`;
 
   await ctx.reply(message, { parse_mode: 'Markdown' });
+}
+
+export async function handleLanguage(ctx) {
+  const user = ctx.from;
+  const dbUser = UserService.getByTelegramId(user.id);
+  
+  if (!dbUser) {
+    await ctx.reply('Please /start first.');
+    return;
+  }
+
+  const args = ctx.message.text.split(' ').slice(1);
+  const newLang = args[0]?.toLowerCase();
+  
+  const currentLang = user.language_code?.startsWith('uz') ? 'uz' : 'en';
+  
+  if (!newLang || !['en', 'uz', 'english', 'uzbek', 'o\'zbek', 'ozbek'].includes(newLang)) {
+    const msg = currentLang === 'uz' 
+      ? `Joriy til: **O'zbek** 🇺🇿\n\nTilni o'zgartirish uchun:\n/lang en - English\n/lang uz - O'zbek`
+      : `Current language: **English** 🇺🇸\n\nTo change language:\n/lang en - English\n/lang uz - O'zbek`;
+    await ctx.reply(msg, { parse_mode: 'Markdown' });
+    return;
+  }
+
+  const targetLang = ['uz', 'uzbek', 'o\'zbek', 'ozbek'].includes(newLang) ? 'uz' : 'en';
+  
+  if (targetLang === currentLang) {
+    const msg = targetLang === 'uz' 
+      ? 'Til allaqachon O\'zbek! 🇺🇿'
+      : 'Language is already English! 🇺🇸';
+    await ctx.reply(msg);
+    return;
+  }
+
+  // Note: Telegram language_code is read-only from user object
+  // We store preference in profile for bot responses
+  ProfileService.update(dbUser.id, { notes: `lang:${targetLang}` });
+  
+  const msg = targetLang === 'uz' 
+    ? '✅ Til **O\'zbek** ga o\'zgartirildi! 🇺🇿\nEndi barcha javoblar o\'zbek tilida bo\'ladi.'
+    : '✅ Language changed to **English**! 🇺🇸\nAll responses will now be in English.';
+  
+  await ctx.reply(msg, { parse_mode: 'Markdown' });
 }
 
 export async function handleClear(ctx) {
@@ -506,6 +636,7 @@ export default {
   handleHistory,
   handleClear,
   handleRecommend,
+  handleLanguage,
   handlePDFReport,
   handlePDFLesson,
   handlePDFVocab,

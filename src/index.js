@@ -8,6 +8,7 @@ import {
   handleHistory, 
   handleClear, 
   handleRecommend,
+  handleLanguage,
   handlePDFReport,
   handlePDFLesson,
   handlePDFVocab,
@@ -64,6 +65,7 @@ bot.command('profile', handleProfile);
 bot.command('history', handleHistory);
 bot.command('clear', handleClear);
 bot.command('recommend', handleRecommend);
+bot.command('lang', handleLanguage);
 bot.command('pdfreport', handlePDFReport);
 bot.command('pdflesson', handlePDFLesson);
 bot.command('pdfvocab', handlePDFVocab);
