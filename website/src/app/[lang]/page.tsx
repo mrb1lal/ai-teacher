@@ -1,5 +1,6 @@
 import Hero from '@/components/Hero';
-import Features from '@/components/Features';
+import FeatureCarousel from '@/components/FeatureCarousel';
+import Testimonials from '@/components/Testimonials';
 import About from '@/components/About';
 import Contact from '@/components/Contact';
 
@@ -7,7 +8,8 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <Features />
+      <FeatureCarousel />
+      <Testimonials />
       <About />
       <Contact />
     </>
