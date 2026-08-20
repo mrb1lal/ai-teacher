@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -12,7 +12,7 @@ const testimonials = [
     name: 'Maria Gonzalez',
     role: 'ESL Student',
     country: 'Mexico',
-    flag: '🇲🇽',
+    flag: '[MX]',
     level: 'B2 to C1',
     text: 'This bot completely changed how I learn English. The AI explanations are so clear, and the pronunciation audio helps me sound more natural. I improved my IELTS score from 6.5 to 7.5 in just 3 months!',
     rating: 5,
@@ -23,7 +23,7 @@ const testimonials = [
     name: 'Ahmed Hassan',
     role: 'Software Engineer',
     country: 'Egypt',
-    flag: '🇪🇬',
+    flag: '[EG]',
     level: 'B1 to B2',
     text: 'The image analysis feature is incredible. I send photos of textbook exercises and get instant explanations. The PDF lessons help me study offline during my commute. Highly recommended!',
     rating: 5,
@@ -34,7 +34,7 @@ const testimonials = [
     name: 'Priya Sharma',
     role: 'University Student',
     country: 'India',
-    flag: '🇮🇳',
+    flag: '[IN]',
     level: 'A2 to B1',
     text: 'Finally, an AI tutor that actually understands my level. It tracks my weak topics and gives personalized recommendations. The vocabulary PDFs are perfect for revision before exams.',
     rating: 5,
@@ -45,7 +45,7 @@ const testimonials = [
     name: 'Thomas Mueller',
     role: 'Business Analyst',
     country: 'Germany',
-    flag: '🇩🇪',
+    flag: '[DE]',
     level: 'C1 to C2',
     text: 'Even at advanced level, this bot challenges me. The image analysis for business documents is a game-changer. The personalized study reports keep me motivated and on track.',
     rating: 5,
@@ -56,7 +56,7 @@ const testimonials = [
     name: 'Yuki Tanaka',
     role: 'Marketing Specialist',
     country: 'Japan',
-    flag: '🇯🇵',
+    flag: '[JP]',
     level: 'B1 to B2',
     text: 'The multi-language support is perfect - I can switch between English and Japanese explanations. The pronunciation audio with IPA transcription helped me fix my accent issues.',
     rating: 5,
@@ -67,7 +67,7 @@ const testimonials = [
     name: 'Carlos Rodriguez',
     role: 'English Teacher',
     country: 'Colombia',
-    flag: '🇨🇴',
+    flag: '[CO]',
     level: 'C2',
     text: 'As an English teacher, I recommend this to all my students. The AI explanations are pedagogically sound. The PDF reports help me track student progress efficiently.',
     rating: 5,
@@ -104,7 +104,7 @@ export default function Testimonials() {
 
   return (
     <section className="relative py-24 overflow-hidden bg-white dark:bg-slate-900">
-      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: `url("${svgPattern}")` }} />
+      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: url("") }} />
       
       <div className="container mx-auto px-4 relative">
         {/* Stats */}
@@ -115,9 +115,9 @@ export default function Testimonials() {
                 <motion.div
                   whileHover={{ y: -4, scale: 1.02 }}
                   className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-opacity-10"
-                  style={{ background: `linear-gradient(to right, ${stat.color.split(' to ')[0].replace('from-', '')}, ${stat.color.split(' to ')[1].replace('to-', '')})` }}
+                  style={{ background: linear-gradient(to right, , ) }}
                 >
-                  <div className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center text-white shadow-lg" style={{ background: `linear-gradient(to right, ${stat.color.split(' to ')[0].replace('from-', '')}, ${stat.color.split(' to ')[1].replace('to-', '')})` }}>
+                  <div className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center text-white shadow-lg" style={{ background: linear-gradient(to right, , ) }}>
                     <Globe className="w-7 h-7" />
                   </motion.div>
                   <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-2">
@@ -178,7 +178,7 @@ export default function Testimonials() {
             <motion.div
               className="flex gap-6 pb-8"
               style={{
-                transform: `translateX(-${currentIndex * (100 / testimonialsPerView)}%)`,
+                transform: 	ranslateX(-%),
                 transition: 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
               }}
             >
@@ -189,8 +189,8 @@ export default function Testimonials() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-100px' }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className={`flex-shrink-0 w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)]`}
-                  style={{ flexShrink: 0, width: `calc(100% / ${testimonialsPerView} - ${testimonialsPerView > 1 ? '1.5rem' : '0'})` }}
+                  className={lex-shrink-0 w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)]}
+                  style={{ flexShrink: 0, width: calc(100% /  - ) }}
                 >
                   <motion.div
                     whileHover={{ y: -8 }}
@@ -256,10 +256,8 @@ export default function Testimonials() {
                   onClick={() => setCurrentIndex(i)}
                   whileHover={{ scale: 1.3 }}
                   whileTap={{ scale: 0.8 }}
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                    i === currentIndex ? 'bg-sky-500 w-8' : 'bg-slate-300 dark:bg-slate-600 hover:bg-sky-400'
-                  }`}
-                  aria-label={`Go to slide ${i + 1}`}
+                  className={w-2.5 h-2.5 rounded-full transition-all duration-300 }
+                  aria-label={Go to slide }
                 />
               ))}
             </motion.div>
