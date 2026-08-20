@@ -12,6 +12,11 @@ import {
   handlePDFReport,
   handlePDFLesson,
   handlePDFVocab,
+  handleAdminPanel,
+  handleAdminUsers,
+  handleAdminBroadcast,
+  handleAdminStats,
+  handleAdminUser,
   handleTextMessage,
   handleAudioRequest,
   handleImages,
@@ -69,6 +74,13 @@ bot.command('lang', handleLanguage);
 bot.command('pdfreport', handlePDFReport);
 bot.command('pdflesson', handlePDFLesson);
 bot.command('pdfvocab', handlePDFVocab);
+
+// Admin commands (only for admin user)
+bot.command('admin', handleAdminPanel);
+bot.command('admin_users', handleAdminUsers);
+bot.command('admin_broadcast', handleAdminBroadcast);
+bot.command('admin_stats', handleAdminStats);
+bot.command('admin_user', handleAdminUser);
 
 bot.on('text', async (ctx, next) => {
   const text = ctx.message.text;

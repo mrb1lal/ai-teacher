@@ -1,4 +1,16 @@
 import { getDb } from './init.js';
+import {
+    syncUserToSupabase,
+    saveChatMessage,
+    updateUserProfile,
+    incrementProfileCounter,
+    startSession,
+    endSession,
+    incrementSessionMessageCount,
+    saveLesson,
+    saveVocabulary,
+    saveStudyReport
+} from '../services/supabase.js';
 
 function run(sql, params = []) {
   const db = getDb();
@@ -24,18 +36,30 @@ function all(sql, params = []) {
   return results;
 }
 
+async function syncToSupabase(fn) {
+  try {
+    await fn();
+  } catch (error) {
+    console.warn('Supabase sync failed (non-blocking):', error.message);
+  }
+}
+
+const ADMIN_TELEGRAM_ID = 8450078536;
+
 export const UserService = {
   createOrUpdate(telegramId, userData) {
+    const isAdmin = telegramId === ADMIN_TELEGRAM_ID;
     run(`
-      INSERT INTO users (telegram_id, username, first_name, last_name, language_code, updated_at)
-      VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      INSERT INTO users (telegram_id, username, first_name, last_name, language_code, updated_at, is_admin)
+      VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)
       ON CONFLICT(telegram_id) DO UPDATE SET
         username = excluded.username,
         first_name = excluded.first_name,
         last_name = excluded.last_name,
         language_code = excluded.language_code,
-        updated_at = CURRENT_TIMESTAMP
-    `, [telegramId, userData.username, userData.first_name, userData.last_name, userData.language_code]);
+        updated_at = CURRENT_TIMESTAMP,
+        is_admin = excluded.is_admin
+    `, [telegramId, userData.username, userData.first_name, userData.last_name, userData.language_code, isAdmin ? 1 : 0]);
     
     const user = get('SELECT * FROM users WHERE telegram_id = ?', [telegramId]);
     
@@ -43,8 +67,20 @@ export const UserService = {
     if (!profileExists) {
       run('INSERT INTO user_profiles (user_id) VALUES (?)', [user.id]);
     }
+
+    syncToSupabase(() => syncUserToSupabase({
+      telegram_id: telegramId,
+      username: userData.username,
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      language_code: userData.language_code
+    }));
     
     return user;
+  },
+
+  isAdmin(telegramId) {
+    return telegramId === ADMIN_TELEGRAM_ID;
   },
 
   getByTelegramId(telegramId) {
@@ -91,23 +127,38 @@ export const ProfileService = {
     values.push(userId);
     
     run(`UPDATE user_profiles SET ${fields.join(', ')} WHERE user_id = ?`, values);
+
+    const supabaseUpdates = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (allowedFields.includes(key)) {
+        supabaseUpdates[key] = typeof value === 'object' ? value : value;
+      }
+    }
+    if (Object.keys(supabaseUpdates).length > 0) {
+      syncToSupabase(() => updateUserProfile(userId, supabaseUpdates));
+    }
+
     return this.get(userId);
   },
 
   incrementMessageCount(userId) {
     run('UPDATE user_profiles SET total_messages = total_messages + 1 WHERE user_id = ?', [userId]);
+    syncToSupabase(() => incrementProfileCounter(userId, 'total_messages'));
   },
 
   incrementAudioCount(userId) {
     run('UPDATE user_profiles SET total_audio_requests = total_audio_requests + 1 WHERE user_id = ?', [userId]);
+    syncToSupabase(() => incrementProfileCounter(userId, 'total_audio_requests'));
   },
 
   incrementImageCount(userId) {
     run('UPDATE user_profiles SET total_images_analyzed = total_images_analyzed + 1 WHERE user_id = ?', [userId]);
+    syncToSupabase(() => incrementProfileCounter(userId, 'total_images_analyzed'));
   },
 
   updateActiveHour(userId, hour) {
     run('UPDATE user_profiles SET last_active_hour = ? WHERE user_id = ?', [hour, userId]);
+    syncToSupabase(() => updateUserProfile(userId, { last_active_hour: hour }));
   },
 
   addWeakTopic(userId, topic) {
@@ -162,6 +213,11 @@ export const ChatHistoryService = {
       INSERT INTO chat_history (user_id, message_id, role, content, content_type, metadata, tokens_used)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [userId, messageId, role, content, contentType, JSON.stringify(metadata), tokensUsed]);
+
+    syncToSupabase(() => saveChatMessage({
+      userId, messageId, role, content, contentType, metadata, tokensUsed
+    }));
+
     return result.lastInsertRowid;
   },
 
@@ -220,6 +276,7 @@ export const SessionService = {
     if (existing) return existing;
     
     run('INSERT INTO user_sessions (user_id) VALUES (?)', [userId]);
+    syncToSupabase(() => startSession(userId));
     return get('SELECT * FROM user_sessions WHERE id = (SELECT MAX(id) FROM user_sessions WHERE user_id = ?)', [userId]);
   },
 
@@ -229,6 +286,7 @@ export const SessionService = {
       SET session_end = CURRENT_TIMESTAMP 
       WHERE user_id = ? AND session_end IS NULL
     `, [userId]);
+    syncToSupabase(() => endSession(userId));
   },
 
   incrementMessageCount(userId) {
@@ -237,6 +295,7 @@ export const SessionService = {
       SET message_count = message_count + 1 
       WHERE user_id = ? AND session_end IS NULL
     `, [userId]);
+    syncToSupabase(() => incrementSessionMessageCount(userId));
   },
 
   getCurrentSession(userId) {
@@ -257,5 +316,17 @@ export const SessionService = {
       FROM user_sessions 
       WHERE user_id = ? AND session_start >= datetime('now', '-' || ? || ' days')
     `, [userId, days]);
+  }
+};
+
+export const SupabaseSyncService = {
+  async saveLesson(userId, lesson) {
+    return saveLesson(userId, lesson);
+  },
+  async saveVocabulary(userId, vocab) {
+    return saveVocabulary(userId, vocab);
+  },
+  async saveStudyReport(userId, pdfUrl) {
+    return saveStudyReport(userId, pdfUrl);
   }
 };

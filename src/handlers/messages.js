@@ -629,6 +629,156 @@ export async function handleCallbackQuery(ctx) {
   await ctx.answerCbQuery();
 }
 
+export async function handleAdminPanel(ctx) {
+  const user = ctx.from;
+  const dbUser = UserService.getByTelegramId(user.id);
+  
+  if (!dbUser || !UserService.isAdmin(user.id)) {
+    await ctx.reply('❌ Access denied. Admin only.');
+    return;
+  }
+
+  const stats = await import('../services/supabase.js').then(m => m.getDashboardStats());
+  const localUsers = UserService.getAllActive();
+
+  let message = `🔐 **Admin Panel**\n\n`;
+  
+  if (stats) {
+    message += `📊 **Supabase Stats:**\n`;
+    message += `• Users: ${stats.totalUsers}\n`;
+    message += `• Messages: ${stats.totalMessages}\n`;
+    message += `• Lessons: ${stats.totalLessons}\n`;
+    message += `• Vocabularies: ${stats.totalVocabularies}\n\n`;
+  }
+
+  message += `📱 **Local DB Stats:**\n`;
+  message += `• Active Users: ${localUsers.length}\n\n`;
+
+  message += `**Commands:**\n`;
+  message += `/admin_users - List all users\n`;
+  message += `/admin_broadcast <msg> - Broadcast to all\n`;
+  message += `/admin_stats - Detailed stats\n`;
+  message += `/admin_user <id> - User details\n`;
+
+  await ctx.reply(message, { parse_mode: 'Markdown' });
+}
+
+export async function handleAdminUsers(ctx) {
+  const user = ctx.from;
+  if (!UserService.isAdmin(user.id)) return;
+
+  const users = UserService.getAllActive();
+  let message = `👥 **All Users (${users.length})**\n\n`;
+  
+  users.slice(0, 20).forEach((u, i) => {
+    message += `${i+1}. @${u.username || 'no-username'} | ${u.first_name} ${u.last_name || ''} | ID: ${u.telegram_id}\n`;
+  });
+  
+  if (users.length > 20) message += `\n... and ${users.length - 20} more`;
+
+  await ctx.reply(message);
+}
+
+export async function handleAdminBroadcast(ctx) {
+  const user = ctx.from;
+  if (!UserService.isAdmin(user.id)) return;
+
+  const text = ctx.message.text.replace('/admin_broadcast', '').trim();
+  if (!text) {
+    await ctx.reply('Usage: /admin_broadcast Your message here');
+    return;
+  }
+
+  const users = UserService.getAllActive();
+  let sent = 0, failed = 0;
+
+  for (const u of users) {
+    try {
+      await ctx.telegram.sendMessage(u.telegram_id, `📢 **Announcement**\n\n${text}`, { parse_mode: 'Markdown' });
+      sent++;
+    } catch {
+      failed++;
+    }
+  }
+
+  await ctx.reply(`✅ Broadcast complete\nSent: ${sent}\nFailed: ${failed}`);
+}
+
+export async function handleAdminStats(ctx) {
+  const user = ctx.from;
+  if (!UserService.isAdmin(user.id)) return;
+
+  const stats = await import('../services/supabase.js').then(m => m.getDashboardStats());
+  const localUsers = UserService.getAllActive();
+  const localDb = await import('../database/init.js').then(m => m.getDb());
+
+  let message = `📈 **Detailed Statistics**\n\n`;
+  
+  if (stats) {
+    message += `**Supabase:**\n`;
+    message += `• Total Users: ${stats.totalUsers}\n`;
+    message += `• Total Messages: ${stats.totalMessages}\n`;
+    message += `• Total Lessons: ${stats.totalLessons}\n`;
+    message += `• Total Vocabularies: ${stats.totalVocabularies}\n\n`;
+  }
+
+  message += `**Local SQLite:**\n`;
+  message += `• Active Users: ${localUsers.length}\n`;
+
+  try {
+    const chatCount = localDb.prepare('SELECT COUNT(*) as c FROM chat_history').get().c;
+    const lessonCount = localDb.prepare('SELECT COUNT(*) as c FROM lessons').get().c;
+    const vocabCount = localDb.prepare('SELECT COUNT(*) as c FROM vocabularies').get().c;
+    message += `• Chat Messages: ${chatCount}\n`;
+    message += `• Lessons: ${lessonCount}\n`;
+    message += `• Vocabularies: ${vocabCount}\n`;
+  } catch {}
+
+  await ctx.reply(message);
+}
+
+export async function handleAdminUser(ctx) {
+  const user = ctx.from;
+  if (!UserService.isAdmin(user.id)) return;
+
+  const args = ctx.message.text.split(' ');
+  if (args.length < 2) {
+    await ctx.reply('Usage: /admin_user <telegram_id>');
+    return;
+  }
+
+  const targetId = parseInt(args[1]);
+  const targetUser = UserService.getByTelegramId(targetId);
+  
+  if (!targetUser) {
+    await ctx.reply('User not found');
+    return;
+  }
+
+  const profile = ProfileService.getProfileSummary(targetUser.id);
+  const chatStats = ChatHistoryService.getStats(targetUser.id);
+
+  let message = `👤 **User Details**\n\n`;
+  message += `**Name:** ${targetUser.first_name} ${targetUser.last_name || ''}\n`;
+  message += `**Username:** @${targetUser.username || 'none'}\n`;
+  message += `**Telegram ID:** ${targetUser.telegram_id}\n`;
+  message += `**Joined:** ${new Date(targetUser.created_at).toLocaleDateString()}\n\n`;
+
+  if (profile) {
+    message += `**Level:** ${profile.englishLevel.toUpperCase()}\n`;
+    message += `**IELTS:** ${profile.estimatedIelts}\n`;
+    message += `**Messages:** ${profile.totalMessages}\n`;
+    message += `**Audio:** ${profile.totalAudioRequests}\n`;
+    message += `**Images:** ${profile.totalImagesAnalyzed}\n`;
+  }
+
+  if (chatStats) {
+    message += `\n**Chat:** ${chatStats.user_messages} user / ${chatStats.assistant_messages} bot`;
+  }
+
+  await ctx.reply(message, { parse_mode: 'Markdown' });
+}
+
 export default {
   handleStart,
   handleHelp,
@@ -640,6 +790,11 @@ export default {
   handlePDFReport,
   handlePDFLesson,
   handlePDFVocab,
+  handleAdminPanel,
+  handleAdminUsers,
+  handleAdminBroadcast,
+  handleAdminStats,
+  handleAdminUser,
   handleTextMessage,
   handleAudioRequest,
   handleImages,
