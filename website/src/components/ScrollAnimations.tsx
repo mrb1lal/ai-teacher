@@ -142,32 +142,3 @@ export function FloatingElement({
     </motion.div>
   );
 }
-
-interface MagneticButtonProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-type ButtonProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onDrag' | 'onDragStart' | 'onDragEnd' | 'onDragEnter' | 'onDragLeave' | 'onDragOver' | 'onDrop'>;
-
-export function MagneticButton({
-  children,
-  className = '',
-  ...props
-}: MagneticButtonProps & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onDrag' | 'onDragStart' | 'onDragEnd' | 'onDragEnter' | 'onDragLeave' | 'onDragOver' | 'onDrop'>) {
-  const ref = useRef<HTMLButtonElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  return (
-    <motion.button
-      ref={ref}
-      whileHover={{ scale: 1.05, y: -2 }}
-      whileTap={{ scale: 0.95 }}
-      className={className}
-      {...props}
-    >
-      {children}
-    </motion.button>
-  );
-}
