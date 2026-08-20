@@ -95,6 +95,13 @@ export default function Testimonials() {
     if (Math.abs(diff) > 50) diff > 0 ? handleNext() : handlePrev();
   };
 
+  const statColors = {
+    'from-sky-500 to-blue-500': 'from-sky-500 to-blue-500',
+    'from-purple-500 to-pink-500': 'from-purple-500 to-pink-500',
+    'from-emerald-500 to-teal-500': 'from-emerald-500 to-teal-500',
+    'from-amber-500 to-orange-500': 'from-amber-500 to-orange-500',
+  };
+
   return (
     <section className="relative py-24 overflow-hidden bg-white dark:bg-slate-900">
       <div className="absolute inset-0 opacity-5" style={{ backgroundImage: `url("${svgPattern}")` }} />
@@ -107,9 +114,10 @@ export default function Testimonials() {
               <ScrollReveal key={stat.label} direction="up" delay={0.2 + index * 0.1} className="text-center">
                 <motion.div
                   whileHover={{ y: -4, scale: 1.02 }}
-                  className={`p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 ${stat.color} bg-opacity-10`}
+                  className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-opacity-10"
+                  style={{ background: `linear-gradient(to right, ${stat.color.split(' to ')[0].replace('from-', '')}, ${stat.color.split(' to ')[1].replace('to-', '')})` }}
                 >
-                  <div className={`w-14 h-14 rounded-xl mx-auto mb-4 bg-gradient-to-br ${stat.color} flex items-center justify-center text-white shadow-lg`}>
+                  <div className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center text-white shadow-lg" style={{ background: `linear-gradient(to right, ${stat.color.split(' to ')[0].replace('from-', '')}, ${stat.color.split(' to ')[1].replace('to-', '')})` }}>
                     <stat.icon className="w-7 h-7" />
                   </motion.div>
                   <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-2">
@@ -256,7 +264,7 @@ export default function Testimonials() {
               ))}
             </motion.div>
           </div>
-        </section>
+        </div>
       </div>
     </section>
   );
