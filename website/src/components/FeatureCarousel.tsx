@@ -98,8 +98,6 @@ export default function FeatureCarousel() {
             onClick={handlePrev}
             disabled={currentIndex === 0}
             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-12 h-12 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 shadow-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-sky-50 dark:hover:bg-sky-900/30 hover:text-sky-600 dark:hover:text-sky-400 transition-all duration-300 opacity-0 group-hover:opacity-100 disabled:opacity-0 disabled:pointer-events-none"
-            onClick={handlePrev}
-            disabled={currentIndex === 0}
             aria-label="Previous"
           >
             <ChevronLeft className="w-6 h-6" />
@@ -109,8 +107,6 @@ export default function FeatureCarousel() {
             onClick={handleNext}
             disabled={currentIndex >= maxIndex}
             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-12 h-12 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 shadow-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-sky-50 dark:hover:bg-sky-900/30 hover:text-sky-600 dark:hover:text-sky-400 transition-all duration-300 opacity-0 group-hover:opacity-100 disabled:opacity-0 disabled:pointer-events-none"
-            onClick={handleNext}
-            disabled={currentIndex >= maxIndex}
             aria-label="Next"
           >
             <ChevronRight className="w-6 h-6" />
