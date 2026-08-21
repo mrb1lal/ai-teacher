@@ -138,10 +138,44 @@ process.once('SIGTERM', gracefulShutdown);
 
 // Health check endpoint for Render free tier
 const PORT = process.env.PORT || 3000;
-http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('OK');
-}).listen(PORT, () => console.log(`🌐 Health server on port ${PORT}`));
+const WEBHOOK_URL = process.env.WEBHOOK_URL; // e.g. https://your-app.onrender.com
+
+const server = http.createServer(async (req, res) => {
+  if (req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OK');
+    return;
+  }
+  
+  if (req.url === '/webhook' && req.method === 'POST') {
+    // Telegraf webhook handling
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const update = JSON.parse(body);
+        bot.handleUpdate(update);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end('{"ok":true}');
+      } catch (e) {
+        res.writeHead(400);
+        res.end('Bad Request');
+      }
+    });
+    return;
+  }
+  
+  res.writeHead(404);
+  res.end('Not Found');
+});
+
+server.listen(PORT, () => console.log(`🌐 Server on port ${PORT}`));
+
+// Set webhook and launch
+if (WEBHOOK_URL) {
+  await bot.telegram.setWebhook(`${WEBHOOK_URL}/webhook`);
+  console.log(`🔗 Webhook set: ${WEBHOOK_URL}/webhook`);
+}
 
 bot.launch().then(() => {
   console.log('🤖 AI English Teacher Bot started successfully!');
