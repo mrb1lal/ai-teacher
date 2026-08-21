@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import http from 'http';
 import { Telegraf, session } from 'telegraf';
 import { initDatabase, closeDatabase } from './database/init.js';
 import { 
@@ -136,7 +137,6 @@ process.once('SIGINT', gracefulShutdown);
 process.once('SIGTERM', gracefulShutdown);
 
 // Health check endpoint for Render free tier
-import http from 'http';
 const PORT = process.env.PORT || 3000;
 http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
