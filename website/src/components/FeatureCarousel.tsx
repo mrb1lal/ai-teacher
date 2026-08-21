@@ -23,10 +23,6 @@ export default function FeatureCarousel() {
   const [touchStart, setTouchStart] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   
-  const testimonialsPerView = typeof window !== 'undefined' 
-    ? (window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1) 
-    : 3;
-
   const itemsPerView = typeof window !== 'undefined' 
     ? (window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1) 
     : 3;
@@ -62,6 +58,10 @@ export default function FeatureCarousel() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const slideWidth = 100 / itemsPerView;
+  const gap = 1.5; // rem
+  const slideWidthWithGap = `calc(${slideWidth}% - ${itemsPerView > 1 ? '1.5rem' : '0'})`;
+
   return (
     <section className="relative py-24 overflow-hidden bg-white dark:bg-slate-900">
       {/* Background pattern */}
@@ -94,27 +94,27 @@ export default function FeatureCarousel() {
         {/* Carousel */}
         <div className="relative group">
           {/* Navigation arrows */}
-          <motion.button
+          <button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-12 h-12 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 shadow-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-sky-50 dark:hover:bg-sky-900/30 hover:text-sky-600 dark:hover:text-sky-400 transition-all duration-300 opacity-0 group-hover:opacity-100 disabled:opacity-0 disabled:pointer-events-none"
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
             aria-label="Previous"
           >
             <ChevronLeft className="w-6 h-6" />
-          </motion.button>
+          </button>
 
-          <motion.button
+          <button
             onClick={handleNext}
             disabled={currentIndex >= maxIndex}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-12 h-12 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 shadow-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-sky-50 dark:hover:bg-sky-900/30 hover:text-sky-600 dark:hover:text-sky-400 transition-all duration-300 opacity-0 group-hover:opacity-100 disabled:opacity-0 disabled:pointer-events-none"
+            onClick={handleNext}
+            disabled={currentIndex >= maxIndex}
             aria-label="Next"
           >
             <ChevronRight className="w-6 h-6" />
-          </motion.button>
+          </button>
 
           {/* Carousel track */}
           <div 
@@ -122,7 +122,7 @@ export default function FeatureCarousel() {
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <motion.div
+            <div
               ref={carouselRef}
               className="flex gap-6 pb-8"
               style={{
@@ -131,17 +131,12 @@ export default function FeatureCarousel() {
               }}
             >
               {features.map((feature, index) => (
-                <motion.div
+                <div
                   key={feature.title}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-100px' }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className={`flex-shrink-0 w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] ${index === features.length - 1 ? 'mr-0' : ''}`}
+                  className={`flex-shrink-0 w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)]`}
                   style={{ flexShrink: 0, width: `calc(100% / ${itemsPerView} - ${itemsPerView > 1 ? '1.5rem' : '0'})` }}
                 >
-                  <motion.div
-                    whileHover={{ y: -8, scale: 1.02 }}
+                  <div
                     className={`group p-8 rounded-3xl ${feature.bg} ${feature.border} border backdrop-blur-sm bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-sky-500/10`}
                   >
                     {/* Glow effect */}
@@ -149,12 +144,11 @@ export default function FeatureCarousel() {
                     
                     <div className="relative z-10">
                       {/* Icon */}
-                      <motion.div
-                        whileHover={{ scale: 1.1, rotate: [0, 5, -5, 0] }}
-                        className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-sky-500/25`}
+                      <div
+                        className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center text-white mb-6 shadow-lg shadow-sky-500/25`}
                       >
                         <feature.icon className="w-8 h-8" />
-                      </motion.div>
+                      </div>
 
                       <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
                         {feature.title}
@@ -173,24 +167,18 @@ export default function FeatureCarousel() {
                         </span>
                       </div>
                     </div>
-                  </motion.div>
-                </motion.div>
+                  </div>
+                </div>
               ))}
-            </motion.div>
+            </div>
           </div>
 
           {/* Indicators */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex justify-center gap-2 mt-8"
-          >
+          <div className="flex justify-center gap-2 mt-8">
             {[...Array(maxIndex + 1)].map((_, i) => (
-              <motion.button
+              <button
                 key={i}
                 onClick={() => setCurrentIndex(i)}
-                whileHover={{ scale: 1.3 }}
-                whileTap={{ scale: 0.8 }}
                 className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                   i === currentIndex
                     ? 'bg-sky-500 w-8'
@@ -199,7 +187,7 @@ export default function FeatureCarousel() {
                 aria-label={`Go to slide ${i + 1}`}
               />
             ))}
-          </motion.div>
+          </div>
 
           {/* Keyboard navigation hint */}
           <p className="text-center text-slate-400 dark:text-slate-500 text-sm mt-6 hidden md:block">

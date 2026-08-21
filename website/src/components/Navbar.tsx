@@ -91,7 +91,7 @@ export default function Navbar() {
             </div>
 
             {/* Language Selector */}
-            <div className="relative">
+            <div className="relative z-50">
               <button
                 onClick={() => setShowLanguage(!showLanguage)}
                 className="flex items-center gap-2 form-input py-2 px-3 text-sm bg-transparent appearance-none cursor-pointer"

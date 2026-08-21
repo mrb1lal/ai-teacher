@@ -29,6 +29,8 @@ body {
   background: rgb(var(--background-rgb));
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -36,12 +38,45 @@ a {
   text-decoration: none;
 }
 
+/* Layout utilities */
 .container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
 
+@media (min-width: 640px) {
+  .container { max-width: 640px; }
+}
+@media (min-width: 768px) {
+  .container { max-width: 768px; }
+}
+@media (min-width: 1024px) {
+  .container { max-width: 1024px; }
+}
+@media (min-width: 1280px) {
+  .container { max-width: 1200px; }
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Button utilities */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -53,6 +88,7 @@ a {
   transition: all 0.2s ease;
   border: none;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn-primary {
@@ -76,6 +112,7 @@ a {
   background: rgba(14, 165, 233, 0.1);
 }
 
+/* Card utilities */
 .card {
   background: white;
   border-radius: 1rem;
@@ -97,6 +134,7 @@ a {
   }
 }
 
+/* Section utilities */
 .section {
   padding: 5rem 0;
 }
@@ -126,6 +164,7 @@ a {
   }
 }
 
+/* Grid utilities */
 .grid {
   display: grid;
   gap: 1.5rem;
@@ -143,8 +182,10 @@ a {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
+/* Badge utilities */
 .badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;
@@ -173,6 +214,7 @@ a {
   color: #ef4444;
 }
 
+/* Stat utilities */
 .stat-card {
   text-align: center;
   padding: 1.5rem;
@@ -197,23 +239,41 @@ a {
   }
 }
 
+/* Nav link utilities */
 .nav-link {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-weight: 500;
   transition: all 0.2s;
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: rgb(var(--primary));
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 80%;
 }
 
 .nav-link:hover {
-  background: rgba(14, 165, 233, 0.1);
   color: rgb(var(--primary));
 }
 
 .nav-link.active {
-  background: rgb(var(--primary));
-  color: white;
+  color: rgb(var(--primary));
 }
 
+/* Form utilities */
 .form-input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -221,6 +281,7 @@ a {
   border-radius: 0.5rem;
   font-size: 1rem;
   transition: all 0.2s;
+  background: white;
 }
 
 .form-input:focus {
@@ -250,6 +311,7 @@ a {
   }
 }
 
+/* Footer link utilities */
 .footer-link {
   color: #64748b;
   transition: color 0.2s;
@@ -262,5 +324,91 @@ a {
 @media (prefers-color-scheme: dark) {
   .footer-link {
     color: #94a3b8;
+  }
+}
+
+/* Carousel utilities */
+.carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+.carousel-slide {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .carousel-slide {
+    width: calc(50% - 0.75rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .carousel-slide {
+    width: calc(33.333% - 1rem);
+  }
+}
+
+/* Animation utilities */
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--primary));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--primary-dark));
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid rgb(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: rgba(14, 165, 233, 0.2);
+  color: inherit;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
