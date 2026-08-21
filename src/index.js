@@ -135,6 +135,14 @@ async function gracefulShutdown() {
 process.once('SIGINT', gracefulShutdown);
 process.once('SIGTERM', gracefulShutdown);
 
+// Health check endpoint for Render free tier
+import http from 'http';
+const PORT = process.env.PORT || 3000;
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('OK');
+}).listen(PORT, () => console.log(`🌐 Health server on port ${PORT}`));
+
 bot.launch().then(() => {
   console.log('🤖 AI English Teacher Bot started successfully!');
   console.log(`📝 Bot: @${bot.botInfo?.username || 'unknown'}`);
